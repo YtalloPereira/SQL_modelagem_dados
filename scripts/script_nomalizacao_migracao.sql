@@ -133,3 +133,54 @@ WHERE NOT EXISTS (
     FROM estado e 
     WHERE e.nome = tv.estadoVendedor
 );
+/*
+    normalizando populando locacao_nor
+*/
+CREATE TABLE locacao_nor (
+    idLocacao INTEGER PRIMARY KEY,
+    dataHoraLocacao DATETIME NOT NULL,
+    dataHoraEntrega DATETIME NULL,
+    qtdDias INTEGER NOT NULL,
+    valorDiaria DECIMAL(18, 2) NOT NULL,
+    valorTotal DECIMAL(18, 2) NOT NULL,
+    idCliente INTEGER NOT NULL,
+    idCarro INTEGER NOT NULL,
+    idVendedor INTEGER NOT NULL,
+    FOREIGN KEY (idCliente) REFERENCES cliente(id),
+    FOREIGN KEY (idCarro) REFERENCES carro(id),
+    FOREIGN KEY (idVendedor) REFERENCES vendedor(id)
+);
+
+INSERT INTO locacao_nor (
+    idLocacao,
+    dataHoraLocacao,
+    dataHoraEntrega,
+    qtdDias,
+    valorDiaria,
+    valorTotal,
+    idCliente,
+    idCarro,
+    idVendedor
+)
+SELECT
+    idLocacao,
+    dataLocacao || ' ' || horaLocacao,
+    dataEntrega || ' ' || horaEntrega,
+    qtdDiaria,
+    vlrDiaria,   
+    qtdDiaria * vlrDiaria,
+    cliente,
+    carro,
+    vendedor
+FROM
+    tb_locacao_nor;
+
+
+
+-- dropando tabelas originais
+DROP TABLE IF EXISTS tb_locacao_nor;
+DROP TABLE IF EXISTS tb_locacao;
+DROP TABLE IF EXISTS tb_carro;
+DROP TABLE IF EXISTS tb_cliente;
+DROP TABLE IF EXISTS tb_vendedor;
+DROP TABLE IF EXISTS tb_tempo;
